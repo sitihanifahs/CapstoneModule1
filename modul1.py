@@ -72,16 +72,16 @@ def displayEntireData() :
 
 def headerTable() :
     print('\n\t\t\t\tLANEIGE PRODUCT')
-    print('-'*82)
-    print('| Product ID | Product Name\t\t\t| Category\t| Stock\t| Price  |')
-    print('-'*82)
+    print('-'*83)
+    print('| Product ID | Product Name\t\t\t| Category\t| Stock\t| Price   |')
+    print('-'*83)
 
 def allDataTable() :
     print('\nThe following is a display of all existing data products :')
     headerTable()
     for id in productData :
-        print('|',id,'   |',productData[id]['name'],' '*(31-len(productData[id]['name'])),'|',productData[id]['category'],'\t|',productData[id]['stock'],'\t|',productData[id]['price'],'| ')
-    print('-'*82)
+        print('|',id,'   |',productData[id]['name'],' '*(31-len(productData[id]['name'])),'|',productData[id]['category'],' '*(12-len(productData[id]['category'])),'|',productData[id]['stock'],' '*(4-len(str(productData[id]['stock']))),'|',productData[id]['price'],' '*(6-len(str(productData[id]['price']))),'|')
+    print('-'*83)
 
 def noDataNotif() :
     print("\nThere aren't available data to display!")
@@ -89,7 +89,7 @@ def noDataNotif() :
 
 def displaySpecificData() :
     if (len(productData)>0) :
-        id = input('\nPlease input the specific Product ID to be displayed : ')
+        id = input('\nPlease input the specific Product ID to be displayed : ').upper()
         if id in productData.keys() :
             specificDataTable(id)
             readMenu()
@@ -102,12 +102,12 @@ def displaySpecificData() :
 def specificDataTable(id) :
     print('\nThe following is a display of product ID {} data :'.format(id))
     headerTable()
-    print('|',id,'   |',productData[id]['name'],' '*(31-len(productData[id]['name'])),'|',productData[id]['category'],'\t|',productData[id]['stock'],'\t|',productData[id]['price'],'| ')
-    print('-'*82)
+    print('|',id,'   |',productData[id]['name'],' '*(31-len(productData[id]['name'])),'|',productData[id]['category'],' '*(12-len(productData[id]['category'])),'|',productData[id]['stock'],' '*(4-len(str(productData[id]['stock']))),'|',productData[id]['price'],' '*(6-len(str(productData[id]['price']))),'|')
+    print('-'*83)
 
 def idNotFound(id) :
-    print('\nThe product ID {} not found!'.format(id))
     allDataTable()
+    print('\nThe product ID {} not found!'.format(id))  
 
 def addMenu() :
     addMenuOption = input('''
@@ -127,32 +127,54 @@ def addMenu() :
         addMenu()
 
 def addNewData() :
-    id = input('\nPlease input the new Product ID : ')
+    id = input('\nPlease input the new Product ID : ').upper()
     if id in productData.keys() :
         specificDataTable(id)
         print("\nThe Product ID {} already exists! You can't add a duplicate Product ID!".format(id))
         addMenu()
     else :
-        productName = input('Please input the product name : ')
-        productCategory = input('Please input the product category : ')
-        productStock = int(input('Please input the product stock : '))
-        productPrice = int(input('Please input the product price : '))      
-        print('\nThe following is a display of the new product ID {} data :'.format(id))
-        headerTable()
-        print('|',id,'   |',productName,' '*(31-len(productName)),'|',productCategory,'\t|',productStock,'\t|',productPrice,'| ')
-        print('-'*82)
-        saveDecision = input('\nDo you want to add the new product ID {} above (YES/NO) ? '.format(id))       
-        if (saveDecision.lower() == 'yes') :
-            productData[id] = {'name': productName,'category': productCategory,'stock': productStock,'price': productPrice}
-            allDataTable()
-            print('\nThe new product ID {} has been successfully added and saved!'.format(id))          
-            addMenu()
-        elif (saveDecision.lower() == 'no') :
-            allDataTable()
-            print('\nThe new product ID {} not being added!'.format(id))
-            addMenu()
+        if (len(id) == 7) :
+            productName = input('Please input the product name : ').title()
+            if (len(productName) > 31) :
+                productName = productName[:31]
+            productCategory = input('Please input the product category : ').title()
+            if (len(productCategory) > 12) :
+                productCategory = productCategory[:12]
+            while True :
+                try :
+                    productStock = int(input('Please input the product stock : '))
+                    break
+                except ValueError :
+                    print("\nYou can't input non integer value for Product Stock!\nPlease input an integer value for Product Stock!\n")
+            if (len(str(productStock)) > 4) :
+                productStock = int(str(productStock)[:4])
+            while True :
+                try :
+                    productPrice = int(input('Please input the product price : '))
+                    break
+                except ValueError :
+                    print("\nYou can't input non integer value for Product Price!\nPlease input an integer value for Product Price!\n") 
+            if (len(str(productPrice)) > 6) :
+                productPrice = int(str(productPrice)[:6])
+            print('\nThe following is a display of the new product ID {} data :'.format(id))
+            headerTable()
+            print('|',id,'   |',productName,' '*(31-len(productName)),'|',productCategory,' '*(12-len(productCategory)),'|',productStock,' '*(4-len(str(productStock))),'|',productPrice,' '*(6-len(str((productPrice)))),'|')
+            print('-'*83)
+            saveDecision = input('\nDo you want to add the new product ID {} above (YES/NO) ? '.format(id)).lower()       
+            if (saveDecision == 'yes') :
+                productData[id] = {'name': productName,'category': productCategory,'stock': productStock,'price': productPrice}
+                allDataTable()
+                print('\nThe new product ID {} has been successfully added and saved!'.format(id))          
+                addMenu()
+            elif (saveDecision == 'no') :
+                allDataTable()
+                print('\nThe new product ID {} not being added!'.format(id))
+                addMenu()
+            else :
+                print('\nYour input is invalid! Recognized input value : YES or NO !')
+                addMenu()
         else :
-            print('\nYour input is invalid! Recognized input value : YES or NO !')
+            print('\nThe new Product ID {} is invalid! Recognized input value is 7 characters!'.format(id))
             addMenu()
 
 def updateMenu() :
@@ -173,14 +195,14 @@ def updateMenu() :
         updateMenu()
 
 def updateExistingData() :
-    id = input('\nPlease input the Product ID to be updated : ')
+    id = input('\nPlease input the Product ID to be updated : ').upper()
     if id in productData.keys() :
         specificDataTable(id)
-        updateContinue = input('\nDo you want to update the product ID {} above (YES/NO) ? '.format(id))  
-        if (updateContinue.lower() == 'no') :
+        updateContinue = input('\nDo you want to update the product ID {} above (YES/NO) ? '.format(id)).lower()  
+        if (updateContinue == 'no') :
             noUpdate(id)
-        elif (updateContinue.lower() == 'yes') :
-            column = (input('''
+        elif (updateContinue == 'yes') :
+            column = input('''
             List of Column :
             > Product ID
             > Product Name
@@ -188,41 +210,63 @@ def updateExistingData() :
             > Product Stock
             > Product Price
             
-            Which column to be updated (id/name/category/stock/price) ? '''))
-            if (column.lower() == 'id') :
-                newValue = input('\nPlease input the new product ID value : ')
-                print('\nThe following is a display of updated product ID from product ID {} data :'.format(id))
-                headerTable()
-                print('|',newValue,'   |',productData[id]['name'],' '*(31-len(productData[id]['name'])),'|',productData[id]['category'],'\t|',productData[id]['stock'],'\t|',productData[id]['price'],'| ')
-                print('-'*82)
-                decisionUpdate(id, column, newValue)
-            elif (column.lower() == 'name') :
-                newValue = input('\nPlease input the new product name value : ')
+            Which column to be updated (id/name/category/stock/price) ? ''').lower()
+            if (column == 'id') :
+                newValue = input('\nPlease input the new product ID value : ').upper()
+                if (len(newValue) == 7) :
+                    print('\nThe following is a display of updated product ID from product ID {} data :'.format(id))
+                    headerTable()
+                    print('|',newValue,'   |',productData[id]['name'],' '*(31-len(productData[id]['name'])),'|',productData[id]['category'],' '*(12-len(productData[id]['category'])),'|',productData[id]['stock'],' '*(4-len(str(productData[id]['stock']))),'|',productData[id]['price'],' '*(6-len(str(productData[id]['price']))),'|')
+                    print('-'*83)
+                    decisionUpdate(id, column, newValue)
+                else :
+                    print('\nThe new Product ID {} is invalid! Recognized input value is 7 characters!'.format(id))
+                    updateExistingData()
+            elif (column == 'name') :
+                newValue = input('\nPlease input the new product name value : ').title()
+                if (len(newValue) > 31) :
+                    newValue = newValue[:31]
                 print('\nThe following is a display of updated name from product ID {} data :'.format(id))
-                headerTable()
-                print('|',id,'   |',newValue,' '*(31-len(newValue)),'|',productData[id]['category'],'\t|',productData[id]['stock'],'\t|',productData[id]['price'],'| ')
-                print('-'*82)
+                headerTable()              
+                print('|',id,'   |',newValue,' '*(31-len(newValue)),'|',productData[id]['category'],' '*(12-len(productData[id]['category'])),'|',productData[id]['stock'],' '*(4-len(str(productData[id]['stock']))),'|',productData[id]['price'],' '*(6-len(str(productData[id]['price']))),'|')
+                print('-'*83)
                 decisionUpdate(id, column, newValue)
-            elif (column.lower() == 'category') :
-                newValue = input('\nPlease input the new product category value : ')
+            elif (column == 'category') :
+                newValue = input('\nPlease input the new product category value : ').title()
+                if (len(newValue) > 12) :
+                    newValue = newValue[:12]
                 print('\nThe following is a display of updated category from product ID {} data :'.format(id))
                 headerTable()
-                print('|',id,'   |',productData[id]['name'],' '*(31-len(productData[id]['name'])),'|',newValue,'\t|',productData[id]['stock'],'\t|',productData[id]['price'],'| ')
-                print('-'*82)
+                print('|',id,'   |',productData[id]['name'],' '*(31-len(productData[id]['name'])),'|',newValue,' '*(12-len(newValue)),'|',productData[id]['stock'],' '*(4-len(str(productData[id]['stock']))),'|',productData[id]['price'],' '*(6-len(str(productData[id]['price']))),'|')
+                print('-'*83)
                 decisionUpdate(id, column, newValue)
-            elif (column.lower() == 'stock') :
-                newValue = int(input('\nPlease input the new product stock value : '))
+            elif (column == 'stock') :
+                while True :
+                    try :
+                        newValue = int(input('\nPlease input the new product stock value : '))
+                        break
+                    except ValueError :
+                        print("\nYou can't input non integer value for Product Stock!\nPlease input an integer value for Product Stock!")
+                if (len(str(newValue)) > 4) :
+                    newValue = int(str(newValue)[:4])
                 print('\nThe following is a display of updated stock from product ID {} data :'.format(id))
                 headerTable()
-                print('|',id,'   |',productData[id]['name'],' '*(31-len(productData[id]['name'])),'|',productData[id]['category'],'\t|',newValue,'\t|',productData[id]['price'],'| ')
-                print('-'*82)
+                print('|',id,'   |',productData[id]['name'],' '*(31-len(productData[id]['name'])),'|',productData[id]['category'],' '*(12-len(productData[id]['category'])),'|',newValue,' '*(4-len(str(newValue))),'|',productData[id]['price'],' '*(6-len(str(productData[id]['price']))),'|')
+                print('-'*83)
                 decisionUpdate(id, column, newValue)
-            elif (column.lower() == 'price') :
-                newValue = int(input('\nPlease input the new product price value : '))
+            elif (column == 'price') :
+                while True :
+                    try :
+                        newValue = int(input('\nPlease input the new product price value : '))
+                        break
+                    except ValueError :
+                        print("\nYou can't input non integer value for Product Price!\nPlease input an integer value for Product Price!")
+                if (len(str(newValue)) > 6) :
+                    newValue = int(str(newValue)[:6])
                 print('\nThe following is a display of updated price from product ID {} data :'.format(id))
                 headerTable()
-                print('|',id,'   |',productData[id]['name'],' '*(31-len(productData[id]['name'])),'|',productData[id]['category'],'\t|',productData[id]['stock'],'\t|',newValue,'| ')
-                print('-'*82)
+                print('|',id,'   |',productData[id]['name'],' '*(31-len(productData[id]['name'])),'|',productData[id]['category'],' '*(12-len(productData[id]['category'])),'|',productData[id]['stock'],' '*(4-len(str(productData[id]['stock']))),'|',newValue,' '*(6-len(str(newValue))),'|')
+                print('-'*83)
                 decisionUpdate(id, column, newValue)
             else :
                 print('\nYour input is invalid!\nRecognized input value : "id" or "name" or "category" or "stock" or "price" !')
@@ -239,16 +283,21 @@ def noUpdate(id) :
     updateMenu()
 
 def decisionUpdate(id, column, newValue) :
-    updateDecision = input('\nAre you sure want to update the product ID {} above (YES/NO) ? '.format(id))
-    if (updateDecision.lower() == 'yes') :
-        if (column.lower() == 'id') :
-            valueID = productData.pop(id)
-            productData[newValue] = valueID
-            successUpdate(id)
-        elif (column.lower() == 'name' or column.lower() == 'category' or column.lower() == 'stock' or column.lower() == 'price') :
+    updateDecision = input('\nAre you sure want to update the product ID {} above (YES/NO) ? '.format(id)).lower()
+    if (updateDecision == 'yes') :
+        if (column == 'id') :
+            if newValue in productData.keys() :
+                allDataTable()
+                print("\nYou can't update Product ID {} to the new value {}!\nThis because Product ID {} already exist as shown above!\nPlease use other new Product ID value!".format(id,newValue,newValue))
+                updateMenu()
+            else :
+                valueID = productData.pop(id)
+                productData[newValue] = valueID
+                successUpdate(id)
+        elif (column == 'name' or column == 'category' or column == 'stock' or column == 'price') :
             productData[id][column] = newValue
             successUpdate(id)
-    elif (updateDecision.lower() == 'no') :
+    elif (updateDecision == 'no') :
         noUpdate(id)
     else :
         invalidUpdate()
@@ -280,16 +329,16 @@ def deleteMenu() :
         deleteMenu()
 
 def deleteExistingData() :
-    id = input('\nPlease input the Product ID to be deleted : ')
+    id = input('\nPlease input the Product ID to be deleted : ').upper()
     if id in productData.keys() :
         specificDataTable(id)
-        deleteDecision = input('\nAre you sure want to delete the product ID {} above (YES/NO) ? '.format(id))
-        if (deleteDecision.lower() == 'yes') :
+        deleteDecision = input('\nAre you sure want to delete the product ID {} above (YES/NO) ? '.format(id)).lower()
+        if (deleteDecision == 'yes') :
             del productData[id]
             allDataTable()
             print('\nThe product ID {} has been successfully deleted!'.format(id))
             deleteMenu()
-        elif (deleteDecision.lower() == 'no') :
+        elif (deleteDecision == 'no') :
             allDataTable()
             print('\nThe product ID {} not being deleted!'.format(id))
             deleteMenu()
